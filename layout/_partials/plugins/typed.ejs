@@ -13,21 +13,26 @@
           type: '<%= theme.index.slogan.api.method %>',
           url: '<%= theme.index.slogan.api.url %>',
           headers: <%- JSON.stringify(theme.index.slogan.api.headers || {}) %>,
-          dataType: 'json',
+          dataType: '<%= theme.index.slogan.api.data_type %>',
           success: function(result) {
             var apiText;
             if (result) {
               var keys = '<%= theme.index.slogan.api.keys %>'.split(',');
-              if (result instanceof Array) {
-                result = result[0];
-              }
-              for (const k of keys) {
-                var value = result[k];
-                if (typeof value === 'string') {
-                  apiText = value;
-                  break;
-                } else if (value instanceof Object) {
-                  result = value;
+              // support text/plain api such as https://api.github.com/zen
+              if (typeof result === 'string') {
+                apiText = result
+              }else{
+                if (result instanceof Array) {
+                  result = result[0];
+                }
+                for (const k of keys) {
+                  var value = result[k];
+                  if (typeof value === 'string') {
+                    apiText = value;
+                    break;
+                  } else if (value instanceof Object) {
+                    result = value;
+                  }
                 }
               }
             }
